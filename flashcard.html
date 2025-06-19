@@ -22,6 +22,11 @@
       <input type="text" id="answer" placeholder="Réponse" />
       <button class="btn" onclick="addCard()">Ajouter Carte</button>
       <button class="btn" onclick="savePack()">Créer le Paquet</button>
+      <h2>📥 Importer un paquet</h2>
+      <input type="text" id="import-pack-name" placeholder="Nom du paquet importé">
+      <textarea id="import-text" placeholder="Copie ici tes cartes (une par ligne avec :: entre question et réponse)" rows="6" style="width: 80%; max-width: 500px; margin-top: 10px;"></textarea>
+      <button class="btn" onclick="importPack()">Importer le paquet</button>
+
     </div>
 
     <h2>Mes Paquets</h2>
@@ -142,6 +147,37 @@
       document.querySelector('main').style.display = 'block';
       document.getElementById('review-section').style.display = 'none';
     }
+    function importPack() {
+      const name = document.getElementById('import-pack-name').value.trim();
+      const raw = document.getElementById('import-text').value.trim();
+
+      if (!name || !raw) return alert("Nom du paquet et contenu requis.");
+
+      const lines = raw.split('\n');
+      const cards = [];
+
+      for (let line of lines) {
+        const parts = line.split('::');
+        if (parts.length === 2) {
+          const q = parts[0].trim();
+          const a = parts[1].trim();
+          if (q && a) cards.push({ q, a });
+        }
+      }
+
+      if (cards.length === 0) {
+        return alert("Aucune carte valide trouvée !");
+      }
+
+      let all = JSON.parse(localStorage.getItem("flashcard-packs") || "{}");
+      all[name] = cards;
+      localStorage.setItem("flashcard-packs", JSON.stringify(all));
+      document.getElementById('import-pack-name').value = '';
+      document.getElementById('import-text').value = '';
+      alert(`Paquet "${name}" importé avec ${cards.length} carte(s) !`);
+      loadPacks();
+    }
+
 
     window.onload = loadPacks;
   </script>
