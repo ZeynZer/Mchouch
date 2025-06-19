@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flashcards</title>
+  <link rel="stylesheet" href="flashcard.css"/>
+</head>
+<body>
+  <header>
+    <div class="logo">📚 Flashcards</div>
+    <a href="index.html" id="btn-retour">Retour</a>
+  </header>
+
+  <main>
+    <h1>Créer un paquet de cartes</h1>
+    <p>Ajoute un nom, puis tes cartes. Tu pourras ensuite les réviser !</p>
+
+    <div class="panel">
+      <input type="text" id="pack-name" placeholder="Titre du paquet" />
+      <input type="text" id="question" placeholder="Question" />
+      <input type="text" id="answer" placeholder="Réponse" />
+      <button class="btn" onclick="addCard()">Ajouter Carte</button>
+      <button class="btn" onclick="savePack()">Créer le Paquet</button>
+    </div>
+
+    <h2>Mes Paquets</h2>
+    <div id="packs-list"></div>
+  </main>
+
+  <div id="review-section" style="display: none;">
+    <h2 id="review-title"></h2>
+    <div id="card-box" class="card-container" onclick="toggleFlip()">
+    <div class="card-flip" id="flashcard">
+        <div class="card-side front" id="card-front"></div>
+        <div class="card-side back" id="card-back"></div>
+    </div>
+    </div>
+
+    <div class="panel">
+        <button class="btn" onclick="prevCard()">Précédent</button>
+        <button class="btn" onclick="nextCard()">Suivant</button>
+        <button class="btn" onclick="closeReview()">Retour</button>
+    </div>
+
+  </div>
+
+  <script>
+    let currentCards = [];
+    let currentReview = [];
+
+    function addCard() {
+      const q = document.getElementById('question').value.trim();
+      const a = document.getElementById('answer').value.trim();
+      if (q && a) {
+        currentCards.push({ q, a });
+        alert("Carte ajoutée !");
+        document.getElementById('question').value = '';
+        document.getElementById('answer').value = '';
+      }
+    }
+
+    function savePack() {
+      const name = document.getElementById('pack-name').value.trim();
+      if (!name || currentCards.length === 0) return alert("Ajoute un nom et au moins une carte !");
+      let all = JSON.parse(localStorage.getItem("flashcard-packs") || "{}");
+      all[name] = currentCards;
+      localStorage.setItem("flashcard-packs", JSON.stringify(all));
+      currentCards = [];
+      document.getElementById('pack-name').value = '';
+      loadPacks();
+    }
+
+    function loadPacks() {
+      const packsList = document.getElementById('packs-list');
+      packsList.innerHTML = '';
+      const all = JSON.parse(localStorage.getItem("flashcard-packs") || "{}");
+      for (let name in all) {
+        const div = document.createElement('div');
+        div.innerHTML = `
+          <h3>${name}</h3>
+          <div class="panel">
+            <button class="btn" onclick="startReview('${name}')">🃏 ${name}</button>
+            <button class="btn" onclick="deletePack('${name}')">🗑 Supprimer</button>
+          </div>
+        `;
+        packsList.appendChild(div);
+      }
+    }
+
+    function deletePack(name) {
+      if (!confirm(`Supprimer le paquet "${name}" ?`)) return;
+      const all = JSON.parse(localStorage.getItem("flashcard-packs") || "{}");
+      delete all[name];
+      localStorage.setItem("flashcard-packs", JSON.stringify(all));
+      loadPacks();
+    }
+
+    function startReview(name) {
+      const all = JSON.parse(localStorage.getItem("flashcard-packs") || "{}");
+      currentReview = [...all[name]];
+      document.getElementById('review-title').textContent = `Révision : ${name}`;
+      document.querySelector('main').style.display = 'none';
+      document.getElementById('review-section').style.display = 'block';
+      nextCard();
+    }
+
+    function toggleFlip() {
+        document.getElementById('flashcard').classList.toggle('flipped');
+    }
+
+
+    let currentIndex = 0;
+
+    function nextCard() {
+        if (currentIndex >= currentReview.length) {
+            alert("Fin du paquet !");
+            return;
+        }
+        showCard(currentIndex);
+        currentIndex++;
+    }
+
+    function prevCard() {
+        if (currentIndex <= 1) return; // Car nextCard() incrémente après l'affichage
+        currentIndex -= 2; // Revenir à la carte précédente
+        showCard(currentIndex);
+        currentIndex++;
+    }
+
+    function showCard(index) {
+        const card = currentReview[index];
+        if (!card) return;
+        document.getElementById('card-front').textContent = card.q;
+        document.getElementById('card-back').textContent = card.a;
+        document.getElementById('flashcard').classList.remove('flipped');
+    }
+
+
+
+    function closeReview() {
+      document.querySelector('main').style.display = 'block';
+      document.getElementById('review-section').style.display = 'none';
+    }
+
+    window.onload = loadPacks;
+  </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Informatique - Révisions Mchouch</title>
+  <link rel="stylesheet" href="informatique.css">
+</head>
+<body>
+  <header>
+    <div class="logo">🧠 Mchouch - Informatique</div>
+    <a href="index.html" id="btn-retour">Retour</a>
+  </header>
+
+  <main>
+    <div class="matiere-buttons">
+      <button disabled>Algorithmique</button>
+      <button disabled>Réseaux</button>
+      <button disabled>Base de données</button>
+      <button disabled>Programmation</button>
+    </div>
+
+    <div class="tabs" style="margin-top:30px;">
+      <button class="tab-btn active" data-tab="code">Code</button>
+    </div>
+
+    <section class="content-section" id="code-tab">
+      <input type="text" id="new-title" placeholder="Titre du code..." />
+      <textarea id="new-code" placeholder="Colle ou écris ton code ici..."></textarea>
+      <button id="add-code-btn" disabled>Ajouter le code</button>
+      <div id="code-list">
+        <!-- Les titres des codes s'afficheront ici -->
+      </div>
+
+      
+    </section>
+  </main>
+
+  <script>
+    const addCodeBtn = document.getElementById('add-code-btn');
+    const newCodeTextarea = document.getElementById('new-code');
+    const newTitleInput = document.getElementById('new-title');
+    const codeList = document.getElementById('code-list');
+
+    function updateButtonState() {
+    addCodeBtn.disabled = !(newTitleInput.value.trim() && newCodeTextarea.value.trim());
+    }
+
+    newTitleInput.addEventListener('input', updateButtonState);
+    newCodeTextarea.addEventListener('input', updateButtonState);
+
+    // Sauvegarde des snippets dans localStorage
+    function saveSnippets() {
+    const snippets = [];
+    document.querySelectorAll('.code-snippet').forEach(snippet => {
+        const title = snippet.querySelector('.code-title').textContent;
+        const code = snippet.querySelector('pre.code-content').textContent;
+        snippets.push({ title, code });
+    });
+    localStorage.setItem('savedSnippets', JSON.stringify(snippets));
+    }
+
+    // Chargement des snippets depuis localStorage au démarrage
+    function loadSnippets() {
+    const saved = localStorage.getItem('savedSnippets');
+    if (!saved) return;
+    const snippets = JSON.parse(saved);
+    snippets.forEach(({ title, code }) => {
+        createSnippet(title, code);
+    });
+    }
+
+    // Fonction pour créer et afficher un snippet (évite duplication de code)
+    function createSnippet(titleText, codeText) {
+    const snippet = document.createElement('div');
+    snippet.className = 'code-snippet';
+
+    const headerDiv = document.createElement('div');
+    headerDiv.className = 'code-header';
+
+    const title = document.createElement('div');
+    title.className = 'code-title';
+    title.textContent = titleText;
+    title.style.cursor = 'pointer';
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.textContent = 'Supprimer';
+    deleteBtn.style.marginLeft = '10px';
+    deleteBtn.style.cursor = 'pointer';
+
+    // Nouveau bouton Copier
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'copy-btn';
+    copyBtn.textContent = 'Copier';
+    copyBtn.style.marginLeft = '10px';
+    copyBtn.style.cursor = 'pointer';
+
+    const content = document.createElement('pre');
+    content.className = 'code-content';
+    content.textContent = codeText;
+    content.style.display = 'none';
+
+    title.addEventListener('click', () => {
+        content.style.display = (content.style.display === 'block') ? 'none' : 'block';
+    });
+
+    deleteBtn.addEventListener('click', () => {
+        if (confirm(`Supprimer le code "${titleText}" ? Cette action est irréversible.`)) {
+        snippet.remove();
+        saveSnippets();
+        }
+    });
+
+    copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(codeText)
+        .then(() => alert(`Code "${titleText}" copié dans le presse-papier !`))
+        .catch(() => alert("Erreur lors de la copie dans le presse-papier."));
+    });
+
+    headerDiv.appendChild(title);
+    headerDiv.appendChild(deleteBtn);
+    headerDiv.appendChild(copyBtn);
+
+    snippet.appendChild(headerDiv);
+    snippet.appendChild(content);
+
+    codeList.prepend(snippet);
+    }
+
+    addCodeBtn.addEventListener('click', () => {
+    const titleText = newTitleInput.value.trim();
+    const codeText = newCodeTextarea.value.trim();
+
+    if (titleText && codeText) {
+        createSnippet(titleText, codeText);
+        saveSnippets();
+
+        newTitleInput.value = '';
+        newCodeTextarea.value = '';
+        addCodeBtn.disabled = true;
+    }
+    });
+
+    // Charger au démarrage
+    window.addEventListener('DOMContentLoaded', loadSnippets);
+
+</script>
+</body>
+</html>
