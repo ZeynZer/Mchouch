@@ -2,28 +2,60 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" href="logo.png" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Favicons pour tous les appareils -->
+  <link rel="icon" href="mchouch.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="mchouch.ico" type="image/x-icon">
+  
+  <!-- Favicons Apple (iPhone, iPad) -->
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png">
+  
+  <!-- Favicons Android/Chrome -->
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="android-chrome-512x512.png">
+  
+  <!-- Manifest pour PWA -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Couleur de thème pour mobile -->
+  <meta name="theme-color" content="#4a90e2">
+  <meta name="msapplication-TileColor" content="#4a90e2">
+  <meta name="msapplication-TileImage" content="mstile-144x144.png">
+  
   <title>Révisions Mchouch</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <div class="logo">🧠 Mchouch</div>
+    <div class="logo">
+      <span class="logo-text">🧠 Mchouch</span>
+    </div>
   </header>
-
+  
   <main>
     <h1>Bienvenue sur ton espace de révisions</h1>
     <p>Choisis une matière pour commencer :</p>
-
+    
     <div class="panel">
       <button class="btn" onclick="rediriger('informatique')">🖥️ Informatique</button>
       <button class="btn" onclick="rediriger('maths')">📐 Mathématiques</button>
       <button class="btn" onclick="rediriger('autre')">📚 Autre</button>
       <button class="btn" onclick="rediriger('flashcard')">📚 Flash Card</button>
-
     </div>
   </main>
-
+  
   <script src="script.js"></script>
 </body>
 </html>
